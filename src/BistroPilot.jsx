@@ -127,18 +127,24 @@ function AIPanel({ state, onClose }) {
     setMsgs(m => [...m, { role: "user", text: msg }]);
     setLoading(true);
     try {
-      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-        "Content-Type": "application/json",
-"Authorization": `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`,
-      body: JSON.stringify({
-  model: "llama3-70b-8192",
-  max_tokens: 1000,
-  messages: [
-    { role: "system", content: ctx },
-    ...msgs.filter((m, i) => i > 0).concat({ role: "user", content: msg }).map(m => ({ role: m.role, content: m.text })),
-  ],
-}),
-      });
+     const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`
+          },
+          body: JSON.stringify({
+            model: "llama3-70b-8192",
+            max_tokens: 1000,
+            messages: [
+              { role: "system", content: ctx },
+              ...msgs.filter((m, i) => i > 0).concat({ role: "user", content: msg }).map(m => ({
+                role: m.role,
+                content: m.content || m.text
+              }))
+            ],
+          }),
+        });
       const data = await res.json();
       setMsgs(m => [...m, { role: "assistant", text: data.content?.map(b => b.text).join("") || "Erreur." }]);
     } catch { setMsgs(m => [...m, { role: "assistant", text: "Erreur de connexion." }]); }
