@@ -156,7 +156,7 @@ Réponds toujours en français. Sois concis, professionnel et utilise des chiffr
           "Authorization": `Bearer ${GROQ_API_KEY}`,
         },
         body: JSON.stringify({
-          model: "llama3-70b-8192",
+          model: "llama-3.3-70b-versatile",
           max_tokens: 1000,
           messages: [
             { role: "system", content: systemPrompt },
